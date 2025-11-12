@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+      <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title> CÁLCULADORA DE DETERMINANTE DE MATRIZ QUADRADA 3X3 </title>
+         
+         <link rel="stylesheet" type="text/css" href="styles.css"> 
+         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </head>
+    <body>
+        <div class="container">
+    <div class="card matrix-card">
+      <div class="card-body">
+        <h3 class="mb-3">Calculadora de Determinante 3x3 - Sarrus </h3>
+
+        <div class="row gy-3">
+          <div class="col-lg-6">
+            <div class="p-3 result-box">
+              <p><strong>Entrada aceita:</strong> inteiros, decimais ou frações </p>
+
+                <div id="formArea" class="d-flex flex-column align-items-center mb-3">
+                    <div class="d-flex matrix-row mb-2">
+                     <input class="form-control matrix-input" id="a00" placeholder="a11">
+                     <input class="form-control matrix-input" id="a01" placeholder="a12">
+                    <input class="form-control matrix-input" id="a02"  placeholder="a13">
+                </div>
+                <div class="d-flex matrix-row mb-2">
+                     <input class="form-control matrix-input" id="a10" placeholder="a21">
+                     <input class="form-control matrix-input" id="a11" placeholder="a22">
+                     <input class="form-control matrix-input" id="a12" placeholder="a23">
+                </div>
+                <div class="d-flex matrix-row mb-2">
+                     <input class="form-control matrix-input" id="a20" placeholder="a31">
+                     <input class="form-control matrix-input" id="a21" placeholder="a32">
+                     <input class="form-control matrix-input" id="a22" placeholder="a33">
+                </div>
+                <div id="validationMsg" class="mt-2"></div>
+              </div>
+
+              <div class="d-flex gap-2">
+                    <button id="calcBtn" class="btn btn-primary">Calcular determinante</button>
+                    <div class="form-check align-self-center ms-auto">
+              </div>
+              </div>
+                    <div class="mt-3">
+                    <div id="result" class="fs-5"><strong>Resultado:</strong> —</div>
+             </div>
+           </div>
+        </div>
+              <div class="col-lg-6">
+              <div class="p-3 result-box">
+              <h6 class="mb-2"><strong>Visualização por Método de Sarrus </strong></h6>
+              <div id="sarrusWrapper" class="sarrus-wrap">
+                    <div id="sarrusArea" class="sarrus-grid mb-2"></div>
+                <svg id="arrowsSvg" class="arrow" width="460" height="220" viewBox="0 0 460 220" style="left:0;top:0"></svg>
+              </div>
+              <div class="d-flex gap-3 align-items-center mt-2">
+                <div><span class="legend-dot" style="background:#676aff"></span> Diagonais positivas</div>
+                <div><span class="legend-dot" style="background:#f97316"></span> Diagonais negativas</div>
+              </div>
+              <div class="mt-2 small-muted">Setas indicam a direção das multiplicações ao aplicar Sarrus</div>
+            </div>
+         </div>
+      </div>
+
+      <hr>
+        <div id="stepsContainer" class="mt-3" style="display:none;"> <h6><strong>Cálculo completo </strong></h6>
+          <div id="steps" class="calc-box">Nenhum cálculo ainda.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+   <div class="container mt-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <h3 class="mb-3">Aplicações Práticas </h3>
+        <p>O valor do determinante (<strong>Det</strong>) que você calculou é <code id="current_det_value" class="interpretation pending">—</code>. Veja como este número se aplica na prática:</p>
+
+        <div class="app-box" style="border-left-color: #cf66ff;">
+             <h5>Aplicação 1: Solução Única em Sistemas (3 Incógnitas)</h5>
+             <p>Se a matriz representa os coeficientes de um sistema 3x3, a existência de uma solução única depende deste resultado:</p>
+            <div id="app1_interpretation" class="interpretation pending">Aguardando cálculo...</div>
+        </div>
+
+        <div class="app-box" style="border-left-color: #ff5162;">
+             <h5>Aplicação 2: Checagem de Consistência (Teste do Zero)</h5>
+             <p>O resultado <strong>zero</strong> é o principal teste de consistência. Se Det = 0:</p>
+             <div id="app2_interpretation" class="interpretation pending">Aguardando cálculo...</div>
+        </div>
+
+        <div class="app-box" style="border-left-color: #00d773;">
+             <h5>Aplicação 3: Área de Paralelogramo (Vetores 2D)</h5>
+             <p>Se a matriz foi montada para calcular a área de um paralelogramo 2D (com vetores \( v_1 = (x_1, y_1) \) e \( v_2 = (x_2, y_2) \)):</p>
+             <div>
+             A área \( |\text{Det}| \) é: <span id="app3_area" class="interpretation pending">Aguardando...</span>
+             </div>
+             <div id="app3_note" class="app-note text-muted">
+            (Isso só é válido se a matriz estiver no formato especial: \(\begin{bmatrix} x_1 & y_1 & 0 \\ x_2 & y_2 & 0 \\ 0 & 0 & 1 \end{bmatrix}\))
+            </div>
+        </div>
+
+        <div class="app-box" style="border-left-color: #fd7e14;">
+             <h5>Aplicação 4: Volume de Paralelepípedo (Vetores 3D)</h5>
+             <p>Se as linhas da matriz são três vetores 3D, o volume do sólido formado por eles é o valor absoluto do determinante:</p>
+             <div>
+             O Volume \( |\text{Det}| \) é: <span id="app4_volume" class="interpretation pending">Aguardando...</span>
+             </div>
+        </div>
+      </div>
+    </div>
+  </div>
+ <script>
+const $ = id => document.getElementById(id);
+const format = n => (Number.isInteger(n) ? String(n) : Number(n).toFixed(6).replace(/\.?0+$/,''));
+
+function parseToken(s){
+  s = String(s).trim();
+  if(!s) throw 'Campo vazio';
+  if(s.includes('/')){
+    const [a,b] = s.split('/');
+    if (b === undefined) throw 'Fração inválida';
+    const num = Number(a), den = Number(b);
+    if (isNaN(num) || isNaN(den) || den === 0) throw 'Fração inválida';
+    return num/den;
+  }
+  const v = Number(s);
+  if (!isNaN(v)) return v;
+  throw 'Formato inválido';
+}
+
+function readMatrix(){
+  const M = [[],[],[]], errors = [];
+  for(let i=0;i<3;i++){
+    for(let j=0;j<3;j++){
+      const el = $(`a${i}${j}`);
+      const raw = el.value.trim();
+      try {
+        M[i][j] = parseToken(raw);
+      } catch(e) {
+        M[i][j] = null;
+        errors.push(`Elemento a[${i+1}][${j+1}] inválido: ${e}`);
+      }
+    }
+  }
+  return { M, errors };
+}
+
+
+function determinantWithSteps(M){
+
+  const p1 = M[0][0] * M[1][1] * M[2][2];
+  const p2 = M[0][1] * M[1][2] * M[2][0];
+  const p3 = M[0][2] * M[1][0] * M[2][1];
+  const sumPos = p1 + p2 + p3;
+
+  const n1 = M[0][2] * M[1][1] * M[2][0];
+  const n2 = M[0][0] * M[1][2] * M[2][1];
+  const n3 = M[0][1] * M[1][0] * M[2][2];
+  const sumNeg = n1 + n2 + n3;
+
+  const det = sumPos - sumNeg;
+
+  return {
+    p1, p2, p3, sumPos,
+    n1, n2, n3, sumNeg,
+    det
+  };
+}
+
+function renderGrid(M){
+  const area = $('sarrusArea');
+  area.innerHTML = '';
+  const vals = [
+    [M[0][0],M[0][1],M[0][2],M[0][0],M[0][1]],
+    [M[1][0],M[1][1],M[1][2],M[1][0],M[1][1]],
+    [M[2][0],M[2][1],M[2][2],M[2][0],M[2][1]]
+  ];
+  for(let i=0;i<3;i++){
+    for(let j=0;j<5;j++){
+      const d = document.createElement('div');
+      d.className = 'cell base' + (j>2 ? ' dup' : '');
+      d.id = `cell-${i}-${j}`;
+      d.textContent = format(vals[i][j]);
+      area.appendChild(d);
+    }
+  }
+
+  setTimeout(adjustSvgSize, 20);
+}
+
+function adjustSvgSize(){
+  const svg = $('arrowsSvg'), wrap = $('sarrusWrapper');
+  const r = wrap.getBoundingClientRect();
+  svg.setAttribute('width', Math.max(460, r.width));
+  svg.setAttribute('height', Math.max(220, r.height));
+  svg.setAttribute('viewBox', `0 0 ${svg.getAttribute('width')} ${svg.getAttribute('height')}`);
+  svg.style.width = svg.getAttribute('width') + 'px';
+  svg.style.height = svg.getAttribute('height') + 'px';
+  svg.style.left = '0px'; svg.style.top = '0px';
+}
+
+function gatherCoords(){
+  const coords = Array.from({length:3},()=>Array(5).fill(null));
+  const parentRect = $('sarrusWrapper').getBoundingClientRect();
+  for(let i=0;i<3;i++){
+    for(let j=0;j<5;j++){
+      const el = $(`cell-${i}-${j}`);
+      if(!el) continue;
+      const r = el.getBoundingClientRect();
+      coords[i][j] = {
+        x: r.left - parentRect.left + r.width/2,
+        y: r.top - parentRect.top + r.height/2
+      };
+    }
+  }
+  return coords;
+}
+
+function drawArrow(svg, x1,y1,x2,y2,color,id){
+  const ns = 'http://www.w3.org/2000/svg';
+
+  let defs = svg.querySelector('defs');
+  if (!defs) {
+    defs = document.createElementNS(ns, 'defs');
+    svg.prepend(defs);
+  }
+
+  if (!defs.querySelector(`#${id}`)) {
+    const marker = document.createElementNS(ns,'marker');
+    marker.setAttribute('id', id);
+    marker.setAttribute('markerWidth','8'); marker.setAttribute('markerHeight','8');
+    marker.setAttribute('refX','6'); marker.setAttribute('refY','3'); marker.setAttribute('orient','auto');
+    const path = document.createElementNS(ns,'path');
+    path.setAttribute('d','M0,0 L6,3 L0,6 L2,3 z'); path.setAttribute('fill',color);
+    marker.appendChild(path);
+    defs.appendChild(marker);
+  }
+
+  const line = document.createElementNS(ns,'line');
+  line.setAttribute('x1',x1.toFixed(2)); line.setAttribute('y1',y1.toFixed(2));
+  line.setAttribute('x2',x2.toFixed(2)); line.setAttribute('y2',y2.toFixed(2));
+  line.setAttribute('stroke',color); line.setAttribute('stroke-width','2.6'); line.setAttribute('stroke-linecap','round');
+  line.setAttribute('marker-end', `url(#${id})`);
+  svg.appendChild(line);
+}
+
+function drawArrows(){
+  const svg = $('arrowsSvg'); svg.innerHTML = '';
+  const coords = gatherCoords();
+  if(!coords[0][0]) return;
+  const posColor = '#6366f1', negColor = '#f97316';
+  const posSets = [ [[0,0],[1,1],[2,2]], [[0,1],[1,2],[2,3]], [[0,2],[1,3],[2,4]] ];
+  const negSets = [ [[0,2],[1,1],[2,0]], [[0,3],[1,2],[2,1]], [[0,4],[1,3],[2,2]] ];
+  let idCounter = 0;
+
+  const drawSet = (sets, color, prefix) => {
+    sets.forEach(set => {
+      const c1 = coords[set[0][0]][set[0][1]];
+      const c2 = coords[set[1][0]][set[1][1]];
+      const c3 = coords[set[2][0]][set[2][1]];
+
+      if(c1 && c2 && c3) {
+        drawArrow(svg, c1.x, c1.y, c2.x, c2.y, color, `${prefix}-m-${idCounter++}`);
+        drawArrow(svg, c2.x, c2.y, c3.x, c3.y, color, `${prefix}-m-${idCounter++}`);
+      }
+    });
+  };
+
+  drawSet(posSets, posColor, 'pos');
+  drawSet(negSets, negColor, 'neg');
+}
+
+function composeSteps(M, calc){
+  for(let i=0;i<3;i++) for(let j=0;j<5;j++){
+    const el = $(`cell-${i}-${j}`);
+    if(el){ el.classList.remove('diag-pos','diag-neg'); el.style.opacity = 1; }
+  }
+  const pos = [ [[0,0],[1,1],[2,2]], [[0,1],[1,2],[2,3]], [[0,2],[1,3],[2,4]] ];
+  const neg = [ [[0,2],[1,1],[2,0]], [[0,3],[1,2],[2,1]], [[0,4],[1,3],[2,2]] ];
+  pos.forEach(set => set.forEach(([r,c])=>{ const e = $(`cell-${r}-${c}`); if(e) e.classList.add('diag-pos'); }));
+  neg.forEach(set => set.forEach(([r,c])=>{ const e = $(`cell-${r}-${c}`); if(e) e.classList.add('diag-neg'); }));
+
+  const m = (i,j) => format(M[i][j]);
+  const lines = [];
+  lines.push('Matriz (a11, a12, a13), (a21, a22, a23), (a31, a32, a33):');
+  lines.push(`A = (${m(0,0)}, ${m(0,1)}, ${m(0,2)}), (${m(1,0)}, ${m(1,1)}, ${m(1,2)}), (${m(2,0)}, ${m(2,1)}, ${m(2,2)})`);
+  lines.push('');
+  lines.push('Aplicando Regra de Sarrus:');
+  lines.push('det = (produtos positivos) - (produtos negativos)');
+  lines.push('');
+  lines.push('Diagonais positivas (somadas):');
+  lines.push(`1) a11*a22*a33 = (${m(0,0)}) * (${m(1,1)}) * (${m(2,2)}) = ${format(calc.p1)}`);
+  lines.push(`2) a12*a23*a31 = (${m(0,1)}) * (${m(1,2)}) * (${m(2,0)}) = ${format(calc.p2)}`);
+  lines.push(`3) a13*a21*a32 = (${m(0,2)}) * (${m(1,0)}) * (${m(2,1)}) = ${format(calc.p3)}`);
+  lines.push(`Soma positivos = ${format(calc.sumPos)}`);
+  lines.push('');
+  lines.push('Diagonais negativas (subtraídas):');
+  lines.push(`1) a13*a22*a31 = (${m(0,2)}) * (${m(1,1)}) * (${m(2,0)}) = ${format(calc.n1)}`);
+  lines.push(`2) a11*a23*a32 = (${m(0,0)}) * (${m(1,2)}) * (${m(2,1)}) = ${format(calc.n2)}`);
+  lines.push(`3) a12*a21*a33 = (${m(0,1)}) * (${m(1,0)}) * (${m(2,2)}) = ${format(calc.n3)}`);
+  lines.push(`Soma negativos = ${format(calc.sumNeg)}`);
+  lines.push('');
+  lines.push(`Combinação final:${format(calc.sumPos)} - ${format(calc.sumNeg)} = ${format(calc.det)}`);
+  return lines.join('\n');
+}
+
+function resetApplications() {
+  $('current_det_value').textContent = '—';
+  $('current_det_value').className = 'interpretation pending';
+
+  $('app1_interpretation').innerHTML = 'Aguardando cálculo...';
+  $('app1_interpretation').className = 'interpretation pending';
+
+  $('app2_interpretation').innerHTML = 'Aguardando cálculo...';
+  $('app2_interpretation').className = 'interpretation pending';
+
+  $('app3_area').innerHTML = 'Aguardando...';
+  $('app3_area').className = 'interpretation pending';
+  $('app3_note').style.color = '#6c757d';
+
+  $('app4_volume').innerHTML = 'Aguardando...';
+  $('app4_volume').className = 'interpretation pending';
+}
+
+function updateApplications(M, calc) {
+  const det = calc.det;
+  const detFormatted = format(det);
+
+  $('current_det_value').textContent = detFormatted;
+  $('current_det_value').className = det === 0 ? 'interpretation negative' : 'interpretation neutral';
+
+  const app1 = $('app1_interpretation');
+  if (det !== 0) {
+    app1.innerHTML = `<strong>Sim, existe uma solução única.</strong> (Sistema Possível e Determinado)`;
+    app1.className = 'interpretation positive';
+  } else {
+    app1.innerHTML = `<strong>Não, existe uma solução única.</strong> (Sistema Indeterminado ou Impossível)`;
+    app1.className = 'interpretation negative';
+  }
+
+  const app2 = $('app2_interpretation');
+  if (det === 0) {
+    app2.innerHTML = `<strong>Inconsistente / Dependente.</strong> Os vetores/equações são dependentes. Se forem vetores 3D, são <strong>Coplanares</strong> (estão no mesmo plano).`;
+    app2.className = 'interpretation negative';
+  } else {
+    app2.innerHTML = `<strong>Consistente / Independente.</strong> Os vetores/equações são independentes.`;
+    app2.className = 'interpretation positive';
+  }
+
+  const app3 = $('app3_area');
+  const app3Note = $('app3_note');
+  const is2DAreaMatrix = M[0][2] === 0 && M[1][2] === 0 &&
+                         M[2][0] === 0 && M[2][1] === 0 && M[2][2] === 1;
+
+  if (is2DAreaMatrix) {
+    const area = Math.abs(det);
+    app3.innerHTML = `<strong>${format(area)}</strong> unidades de área`;
+    app3.className = 'interpretation neutral';
+    app3Note.style.color = '#198754';
+  } else {
+    app3.innerHTML = '—';
+    app3.className = 'interpretation pending';
+    app3Note.style.color = '#dc3545';
+  }
+
+  const volume = Math.abs(det);
+  $('app4_volume').innerHTML = `<strong>${format(volume)}</strong> unidades cúbicas`;
+  $('app4_volume').className = 'interpretation neutral';
+}
+
+$('calcBtn').addEventListener('click', () => {
+  const { M, errors } = readMatrix();
+  const valArea = $('validationMsg'); valArea.innerHTML=''; valArea.className='';
+
+  if (errors.length){
+    valArea.innerHTML = errors.map(e => `<div class="text-error">${e}</div>`).join('');
+    $('steps').textContent = 'Corrija os erros acima e tente novamente.';
+    $('result').innerHTML = '<strong>Resultado:</strong> —';
+    $('sarrusArea').innerHTML = '';
+    $('arrowsSvg').innerHTML = '';
+    $('stepsContainer').style.display = 'none';
+    resetApplications();
+    return;
+  }
+
+  renderGrid(M);
+
+  setTimeout(()=>{
+    const calc = determinantWithSteps(M);
+    adjustSvgSize();
+    drawArrows();
+
+    $('stepsContainer').style.display = 'block';
+    $('steps').textContent = composeSteps(M, calc);
+
+    $('result').innerHTML = `<strong>Resultado:</strong> ${format(calc.det)}`;
+
+    updateApplications(M, calc);
+  }, 50);
+});
+
+document.querySelectorAll('.matrix-input').forEach(el => {
+  el.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('calcBtn').click(); }});
+});
+
+window.addEventListener('resize', () => {
+  setTimeout(()=>{
+    adjustSvgSize();
+    if($('cell-0-0')) {
+      drawArrows();
+    }
+  }, 120);
+});
+
+document.addEventListener('DOMContentLoaded', resetApplications);
+</script>
+
+    </body>
+</html>

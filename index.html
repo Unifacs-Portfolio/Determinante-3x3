@@ -1,116 +1,149 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-    <head>
-      <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title> CÁLCULADORA DE DETERMINANTE DE MATRIZ QUADRADA 3X3 </title>
-         
-         <link rel="stylesheet" type="text/css" href="styles.css"> 
-         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    </head>
-    <body>
-        <div class="container">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Determinante 3x3 — Sarrus</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <div class="container">
     <div class="card matrix-card">
       <div class="card-body">
-        <h3 class="mb-3">Calculadora de Determinante 3x3 - Sarrus </h3>
+        <h3 class="mb-3">Calculadora de Determinante 3x3 - Sarrus</h3>
 
         <div class="row gy-3">
           <div class="col-lg-6">
             <div class="p-3 result-box">
-              <p><strong>Entrada aceita:</strong> inteiros, decimais ou frações </p>
+              <p><strong class="strong-plain">Entrada aceita:</strong> inteiros, decimais ou frações</p>
 
-                <div id="formArea" class="d-flex flex-column align-items-center mb-3">
-                    <div class="d-flex matrix-row mb-2">
-                     <input class="form-control matrix-input" id="a00" placeholder="a11">
-                     <input class="form-control matrix-input" id="a01" placeholder="a12">
-                    <input class="form-control matrix-input" id="a02"  placeholder="a13">
+              <div id="formArea" class="d-flex flex-column align-items-center mb-3">
+                <div class="d-flex matrix-row mb-2">
+                  <input class="form-control matrix-input" id="a00" placeholder="a11">
+                  <input class="form-control matrix-input" id="a01" placeholder="a12">
+                  <input class="form-control matrix-input" id="a02" placeholder="a13">
                 </div>
                 <div class="d-flex matrix-row mb-2">
-                     <input class="form-control matrix-input" id="a10" placeholder="a21">
-                     <input class="form-control matrix-input" id="a11" placeholder="a22">
-                     <input class="form-control matrix-input" id="a12" placeholder="a23">
+                  <input class="form-control matrix-input" id="a10" placeholder="a21">
+                  <input class="form-control matrix-input" id="a11" placeholder="a22">
+                  <input class="form-control matrix-input" id="a12" placeholder="a23">
                 </div>
                 <div class="d-flex matrix-row mb-2">
-                     <input class="form-control matrix-input" id="a20" placeholder="a31">
-                     <input class="form-control matrix-input" id="a21" placeholder="a32">
-                     <input class="form-control matrix-input" id="a22" placeholder="a33">
+                  <input class="form-control matrix-input" id="a20" placeholder="a31">
+                  <input class="form-control matrix-input" id="a21" placeholder="a32">
+                  <input class="form-control matrix-input" id="a22" placeholder="a33">
                 </div>
                 <div id="validationMsg" class="mt-2"></div>
               </div>
 
               <div class="d-flex gap-2">
-                    <button id="calcBtn" class="btn btn-primary">Calcular determinante</button>
-                    <div class="form-check align-self-center ms-auto">
+                <button id="calcBtn" class="btn btn-primary">Calcular determinante</button>
+                <div class="form-check align-self-center ms-auto"></div>
               </div>
+              <div class="mt-3">
+                <div id="result" class="fs-5"><strong class="strong-plain">Resultado:</strong> —</div>
               </div>
-                    <div class="mt-3">
-                    <div id="result" class="fs-5"><strong>Resultado:</strong> —</div>
-             </div>
-           </div>
-        </div>
-              <div class="col-lg-6">
-              <div class="p-3 result-box">
-              <h6 class="mb-2"><strong>Visualização por Método de Sarrus </strong></h6>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="p-3 result-box">
+              <h6 class="mb-2"><strong class="strong-plain">Visualização Sarrus</strong></h6>
               <div id="sarrusWrapper" class="sarrus-wrap">
-                    <div id="sarrusArea" class="sarrus-grid mb-2"></div>
+                <div id="sarrusArea" class="sarrus-grid mb-2"></div>
                 <svg id="arrowsSvg" class="arrow" width="460" height="220" viewBox="0 0 460 220" style="left:0;top:0"></svg>
               </div>
               <div class="d-flex gap-3 align-items-center mt-2">
-                <div><span class="legend-dot" style="background:#676aff"></span> Diagonais positivas</div>
+                <div><span class="legend-dot" style="background:#5a3cff"></span> Diagonais positivas</div>
                 <div><span class="legend-dot" style="background:#f97316"></span> Diagonais negativas</div>
               </div>
               <div class="mt-2 small-muted">Setas indicam a direção das multiplicações ao aplicar Sarrus</div>
             </div>
-         </div>
-      </div>
+          </div>
+        </div>
 
-      <hr>
-        <div id="stepsContainer" class="mt-3" style="display:none;"> <h6><strong>Cálculo completo </strong></h6>
+        <hr>
+        <div id="stepsContainer" class="mt-3" style="display:none;">
+          <h6><strong class="strong-plain">Cálculo completo</strong></h6>
           <div id="steps" class="calc-box">Nenhum cálculo ainda.</div>
         </div>
       </div>
     </div>
   </div>
-   <div class="container mt-4 mb-4">
+
+  <!-- Aplicações Práticas convertidas em cards -->
+  <div class="container mt-4 mb-4">
     <div class="card">
       <div class="card-body">
-        <h3 class="mb-3">Aplicações Práticas </h3>
-        <p>O valor do determinante (<strong>Det</strong>) que você calculou é <code id="current_det_value" class="interpretation pending">—</code>. Veja como este número se aplica na prática:</p>
+        <h3 class="mb-3">Aplicações Práticas</h3>
+        <p>O valor do determinante (<strong class="strong-plain">Det</strong>) que você calculou é <code id="current_det_value" class="interpretation pending">—</code>. Veja como este número se aplica:</p>
 
-        <div class="app-box" style="border-left-color: #cf66ff;">
-             <h5>Aplicação 1: Solução Única em Sistemas (3 Incógnitas)</h5>
-             <p>Se a matriz representa os coeficientes de um sistema 3x3, a existência de uma solução única depende deste resultado:</p>
-            <div id="app1_interpretation" class="interpretation pending">Aguardando cálculo...</div>
-        </div>
-
-        <div class="app-box" style="border-left-color: #ff5162;">
-             <h5>Aplicação 2: Checagem de Consistência (Teste do Zero)</h5>
-             <p>O resultado <strong>zero</strong> é o principal teste de consistência. Se Det = 0:</p>
-             <div id="app2_interpretation" class="interpretation pending">Aguardando cálculo...</div>
-        </div>
-
-        <div class="app-box" style="border-left-color: #00d773;">
-             <h5>Aplicação 3: Área de Paralelogramo (Vetores 2D)</h5>
-             <p>Se a matriz foi montada para calcular a área de um paralelogramo 2D (com vetores \( v_1 = (x_1, y_1) \) e \( v_2 = (x_2, y_2) \)):</p>
-             <div>
-             A área \( |\text{Det}| \) é: <span id="app3_area" class="interpretation pending">Aguardando...</span>
-             </div>
-             <div id="app3_note" class="app-note text-muted">
-            (Isso só é válido se a matriz estiver no formato especial: \(\begin{bmatrix} x_1 & y_1 & 0 \\ x_2 & y_2 & 0 \\ 0 & 0 & 1 \end{bmatrix}\))
+        <div class="apps-grid">
+          <details class="app-card variant-primary">
+            <summary class="app-card-summary">
+              <div class="app-card-head">
+                <div class="title">Aplicação 1: Solução Única em Sistemas</div>
+                <div class="subtitle">Sistemas lineares 3x3</div>
+              </div>
+              <div class="app-card-badge">Teste</div>
+            </summary>
+            <div class="app-card-body">
+              <p>Se a matriz representa os coeficientes de um sistema 3x3, a existência de uma solução única depende deste resultado:</p>
+              <div id="app1_interpretation" class="interpretation pending">Aguardando cálculo...</div>
             </div>
+          </details>
+
+          <details class="app-card variant-accent">
+            <summary class="app-card-summary">
+              <div class="app-card-head">
+                <div class="title">Aplicação 2: Checagem de Consistência</div>
+                <div class="subtitle">Teste do zero</div>
+              </div>
+              <div class="app-card-badge">Importante</div>
+            </summary>
+            <div class="app-card-body">
+              <p>O resultado <strong class="strong-plain">zero</strong> é o principal teste de consistência. Se Det = 0:</p>
+              <div id="app2_interpretation" class="interpretation pending">Aguardando cálculo...</div>
+            </div>
+          </details>
+
+          <details class="app-card">
+            <summary class="app-card-summary">
+              <div class="app-card-head">
+                <div class="title">Aplicação 3: Área de Paralelogramo (2D)</div>
+                <div class="subtitle">Matriz no formato especial</div>
+              </div>
+              <div class="app-card-badge">Área</div>
+            </summary>
+            <div class="app-card-body">
+              <p>Se a matriz foi montada para calcular a área de um paralelogramo 2D (com vetores v1 = (x1, y1) e v2 = (x2, y2)):</p>
+              <div>A área <code>|Det|</code> é: <span id="app3_area" class="interpretation pending">Aguardando...</span></div>
+              <div id="app3_note" class="app-note">Isso só é válido se a matriz estiver no formato especial: \(\begin{bmatrix} x_1 & y_1 & 0 \\ x_2 & y_2 & 0 \\ 0 & 0 & 1 \end{bmatrix}\)</div>
+            </div>
+          </details>
+
+          <details class="app-card">
+            <summary class="app-card-summary">
+              <div class="app-card-head">
+                <div class="title">Aplicação 4: Volume de Paralelepípedo (3D)</div>
+                <div class="subtitle">Linhas da matriz = vetores 3D</div>
+              </div>
+              <div class="app-card-badge">Volume</div>
+            </summary>
+            <div class="app-card-body">
+              <p>Se as linhas da matriz são três vetores 3D, o volume do sólido formado por eles é o valor absoluto do determinante:</p>
+              <div>O Volume <code>|Det|</code> é: <span id="app4_volume" class="interpretation pending">Aguardando...</span></div>
+            </div>
+          </details>
         </div>
 
-        <div class="app-box" style="border-left-color: #fd7e14;">
-             <h5>Aplicação 4: Volume de Paralelepípedo (Vetores 3D)</h5>
-             <p>Se as linhas da matriz são três vetores 3D, o volume do sólido formado por eles é o valor absoluto do determinante:</p>
-             <div>
-             O Volume \( |\text{Det}| \) é: <span id="app4_volume" class="interpretation pending">Aguardando...</span>
-             </div>
-        </div>
       </div>
     </div>
   </div>
- <script>
+
+  <!-- JavaScript original (mantido, sem alterações funcionais) -->
+  <script>
 const $ = id => document.getElementById(id);
 const format = n => (Number.isInteger(n) ? String(n) : Number(n).toFixed(6).replace(/\.?0+$/,''));
 
@@ -146,9 +179,7 @@ function readMatrix(){
   return { M, errors };
 }
 
-
 function determinantWithSteps(M){
-
   const p1 = M[0][0] * M[1][1] * M[2][2];
   const p2 = M[0][1] * M[1][2] * M[2][0];
   const p3 = M[0][2] * M[1][0] * M[2][1];
@@ -332,19 +363,19 @@ function updateApplications(M, calc) {
 
   const app1 = $('app1_interpretation');
   if (det !== 0) {
-    app1.innerHTML = `<strong>Sim, existe uma solução única.</strong> (Sistema Possível e Determinado)`;
+    app1.innerHTML = `<strong class="strong-plain">Sim, existe uma solução única.</strong> (Sistema Possível e Determinado)`;
     app1.className = 'interpretation positive';
   } else {
-    app1.innerHTML = `<strong>Não, existe uma solução única.</strong> (Sistema Indeterminado ou Impossível)`;
+    app1.innerHTML = `<strong class="strong-plain">Não, existe uma solução única.</strong> (Sistema Indeterminado ou Impossível)`;
     app1.className = 'interpretation negative';
   }
 
   const app2 = $('app2_interpretation');
   if (det === 0) {
-    app2.innerHTML = `<strong>Inconsistente / Dependente.</strong> Os vetores/equações são dependentes. Se forem vetores 3D, são <strong>Coplanares</strong> (estão no mesmo plano).`;
+    app2.innerHTML = `<strong class="strong-plain">Inconsistente / Dependente.</strong> Os vetores/equações são dependentes. Se forem vetores 3D, são <strong class="strong-plain">Coplanares</strong> (estão no mesmo plano).`;
     app2.className = 'interpretation negative';
   } else {
-    app2.innerHTML = `<strong>Consistente / Independente.</strong> Os vetores/equações são independentes.`;
+    app2.innerHTML = `<strong class="strong-plain">Consistente / Independente.</strong> Os vetores/equações são independentes.`;
     app2.className = 'interpretation positive';
   }
 
@@ -355,7 +386,7 @@ function updateApplications(M, calc) {
 
   if (is2DAreaMatrix) {
     const area = Math.abs(det);
-    app3.innerHTML = `<strong>${format(area)}</strong> unidades de área`;
+    app3.innerHTML = `<strong class="strong-plain">${format(area)}</strong> unidades de área`;
     app3.className = 'interpretation neutral';
     app3Note.style.color = '#198754';
   } else {
@@ -365,7 +396,7 @@ function updateApplications(M, calc) {
   }
 
   const volume = Math.abs(det);
-  $('app4_volume').innerHTML = `<strong>${format(volume)}</strong> unidades cúbicas`;
+  $('app4_volume').innerHTML = `<strong class="strong-plain">${format(volume)}</strong> unidades cúbicas`;
   $('app4_volume').className = 'interpretation neutral';
 }
 
@@ -376,7 +407,7 @@ $('calcBtn').addEventListener('click', () => {
   if (errors.length){
     valArea.innerHTML = errors.map(e => `<div class="text-error">${e}</div>`).join('');
     $('steps').textContent = 'Corrija os erros acima e tente novamente.';
-    $('result').innerHTML = '<strong>Resultado:</strong> —';
+    $('result').innerHTML = '<strong class="strong-plain">Resultado:</strong> —';
     $('sarrusArea').innerHTML = '';
     $('arrowsSvg').innerHTML = '';
     $('stepsContainer').style.display = 'none';
@@ -394,7 +425,7 @@ $('calcBtn').addEventListener('click', () => {
     $('stepsContainer').style.display = 'block';
     $('steps').textContent = composeSteps(M, calc);
 
-    $('result').innerHTML = `<strong>Resultado:</strong> ${format(calc.det)}`;
+    $('result').innerHTML = `<strong class="strong-plain">Resultado:</strong> ${format(calc.det)}`;
 
     updateApplications(M, calc);
   }, 50);
@@ -414,7 +445,6 @@ window.addEventListener('resize', () => {
 });
 
 document.addEventListener('DOMContentLoaded', resetApplications);
-</script>
-
-    </body>
+  </script>
+</body>
 </html>

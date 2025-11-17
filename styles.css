@@ -1,0 +1,175 @@
+/*
+CSS principal
+*/
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+}
+
+body {
+    background-color: #f1f1f1;
+    font-family: 'Raleway', sans-serif;
+    color: #333;
+}
+
+input {
+   width: 60px; 
+   height: 60px; 
+   margin: 5px; 
+   border-radius: 5px;
+   border: 1px solid #ccc;
+   text-align: center;
+   font-size: 1.2em; 
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1em; 
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh; /* Trocado para min-height */
+    height: auto; 
+    padding: 20px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.box-Matriz {
+    display: flex;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.box-body {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.box-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+/* --- NOVOS ESTILOS PARA ANIMAÇÃO --- */
+
+#resultado {
+   margin-top: 20px;
+   font-size: 1.8em;
+   font-weight: bold;
+   color: #333;
+}
+
+.passo-a-passo-container {
+   margin-top: 20px;
+   width: auto; /* Ajustado */
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 15px; /* Espaço entre a matriz e os cálculos */
+}
+
+/* A matriz visualizada (com as colunas duplicadas) */
+.visualizacao-matriz {
+   display: grid;
+   /* 5 colunas: 3 originais + 2 duplicadas */
+   grid-template-columns: repeat(5, 60px); 
+   gap: 5px;
+   position: relative;
+   border-left: 2px solid #333; /* Simula os colchetes da matriz */
+   border-right: 2px solid #333;
+   padding: 0 5px;
+}
+
+.visualizacao-matriz .cell {
+   width: 60px;
+   height: 60px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   background-color: #fff;
+   border: 1px solid #ddd;
+   border-radius: 5px;
+   font-size: 1.2em;
+   font-weight: bold;
+   transition: all 0.3s ease-in-out; 
+}
+
+/* Estilo para colunas duplicadas */
+.visualizacao-matriz .cell.duplicada {
+   background-color: #f0f0f0;
+   opacity: 0.7;
+   border-style: dashed;
+   border-color: #aaa;
+}
+
+/* Classes de highlight (animação) */
+.visualizacao-matriz .cell.highlight-diag-pos {
+   background-color: #e0ffe0; 
+   border-color: #008000;
+   transform: scale(1.05);
+   box-shadow: 0 0 10px rgba(0, 128, 0, 0.5);
+}
+
+.visualizacao-matriz .cell.highlight-diag-neg {
+   background-color: #ffe0e0;
+   border-color: #c00;
+   transform: scale(1.05);
+   box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+}
+
+/* Para mostrar os cálculos */
+#calculo-detalhado {
+   font-family: 'Courier New', Courier, monospace;
+   font-size: 1.1em;
+   text-align: left;
+   width: 100%;
+   max-width: 400px; 
+   background: #fff;
+   padding: 15px;
+   border-radius: 5px;
+   border: 1px solid #ddd;
+}
+
+#calculo-detalhado p {
+   margin: 8px 0;
+}
+
+#calculo-detalhado .soma-pos {
+   color: #008000;
+   font-weight: bold;
+}
+
+#calculo-detalhado .soma-neg {
+   color: #c00;
+   font-weight: bold;
+}
+
+#calculo-detalhado .final {
+   font-weight: bold;
+   font-size: 1.2em;
+   border-top: 1px solid #ccc;
+   padding-top: 10px;
+}

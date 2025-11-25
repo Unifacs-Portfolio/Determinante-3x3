@@ -266,17 +266,6 @@ function atualizarApps(matriz, calc) {
         `<span class="text-danger">LD (Linearmente Dependentes).</span>`
 
     document.getElementById('app4_volume').textContent = `${formatar(Math.abs(det))} u.v.`
-
-    const is2D = matriz[0][2] === 0 && matriz[1][2] === 0 && matriz[2][0] === 0 && matriz[2][1] === 0 && matriz[2][2] === 1
-    if (is2D) {
-        document.getElementById('app3_area').textContent = `${formatar(Math.abs(det))} u.a.`
-        document.getElementById('app3_note').textContent = "Formato 2D válido."
-        document.getElementById('app3_note').className = "text-success small"
-    } else {
-        document.getElementById('app3_area').textContent = "—"
-        document.getElementById('app3_note').textContent = "Não é formato 2D."
-        document.getElementById('app3_note').className = "text-danger small"
-    }
 }
 
 // --- EVENTO PRINCIPAL ---

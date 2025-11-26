@@ -274,6 +274,10 @@ document.getElementById('calcBtn').addEventListener('click', async () => {
     const msgValidacao = document.getElementById('validationMsg')
     msgValidacao.innerHTML = ''
 
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        window.location.reload()
+    })
+
     // Limpa interface
     document.getElementById('stepsContainer').style.display = 'none'
     document.getElementById('applications-panel').style.display = 'none'

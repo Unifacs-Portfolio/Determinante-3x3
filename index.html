@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Determinante Sarrus - Animação Completa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="row gx-5 justify-content-center">
+      <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+          <div class="card-header">
+            <h4 class="mb-0 text-center text-muted fw-bold">Calculadora de Determinante 3x3</h4>
+          </div>
+          <div class="card-body">
+            <div class="row gy-4">
+              <div class="col-md-5 d-flex flex-column justify-content-between">
+                <div class="p-3 bg-white rounded border-0">
+                  <div id="formArea" class="d-flex flex-column align-items-center mb-4">
+                    <div class="d-flex gap-2 mb-2">
+                      <input class="form-control matrix-input text-center" id="a00" placeholder="a₁₁">
+                      <input class="form-control matrix-input text-center" id="a01" placeholder="a₁₂">
+                      <input class="form-control matrix-input text-center" id="a02" placeholder="a₁₃">
+                    </div>
+                    <div class="d-flex gap-2 mb-2">
+                      <input class="form-control matrix-input text-center" id="a10" placeholder="a₂₁">
+                      <input class="form-control matrix-input text-center" id="a11" placeholder="a₂₂">
+                      <input class="form-control matrix-input text-center" id="a12" placeholder="a₂₃">
+                    </div>
+                    <div class="d-flex gap-2 mb-2">
+                      <input class="form-control matrix-input text-center" id="a20" placeholder="a₃₁">
+                      <input class="form-control matrix-input text-center" id="a21" placeholder="a₃₂">
+                      <input class=" form-control matrix-input text-center" id="a22" placeholder="a₃₃">
+                    </div>
+                    <div id="validationMsg" class="mt-2"></div>
+                  </div>
+                  <div class="d-grid gap-2">
+                    <button id="calcBtn" class="btn btn-primary shadow-sm">CALCULAR</button>
+                  </div>
+                  <div class="mt-4 text-center">
+                    <div id="result" class="fs-4 text-dark">Resultado: <span class="fw-bold">—</span></div>
+                  </div>
+                </div>
+                <div id="stepsContainer" class="mt-3 pt-3 border-top">
+                  <div id="calculo-detalhado" class="small text-muted"></div>
+                </div>
+              </div>
+              <div class="col-md-7 border-start-md col-separator">
+                <div class="h-100 d-flex flex-column justify-content-center">
+                  <h6 class="text-center text-muted mb-4 small uppercase fw-bold">Regra de Sarrus</h6>
+                  <div id="sarrusWrapper" class="sarrus-wrap">
+                    <div id="sarrusArea" class="sarrus-grid"></div>
+                    <svg id="arrowsSvg" class="position-absolute"></svg>
+                  </div>
+                  <div class="legend-container">
+                    <div class="legend-item">
+                      <span id="legendaPositiva" class="legend-dot"></span>
+                      Diagonal principal
+                    </div>
+                    <div class="legend-item">
+                      <span id="legendaNegativa" class="legend-dot"></span>
+                      Diagonal secundária
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4" id="applications-panel">
+        <div class="card shadow-sm h-100 border-0">
+          <div class="card-header bg-white">
+            <h5 class="mb-0 fs-6 fw-bold text-muted">Aplicações Práticas</h5>
+          </div>
+          <div class="card-body bg-white">
+            <p class="small text-muted">
+              O valor do determinante (<strong class="strong-plain">Det</strong>) calculado é
+              <code id="current_det_value" class="interpretation pending fs-5 fw-bold">—</code>.
+            </p>
+            <div class="apps-grid">
+              <details class="app-card" open>
+                <summary class="app-card-summary">
+                  <div class="app-card-head">
+                    <div class="title">1. Solução Única em Sistemas</div>
+                    <div class="subtitle">Sistemas lineares 3x3</div>
+                  </div>
+                  <div class="app-card-badge">Teste</div>
+                </summary>
+                <div class="app-card-body">
+                  <p class="mb-2 text-muted small">A existência de solução única depende deste resultado:</p>
+                  <div id="app1_interpretation" class="interpretation pending small">Aguardando cálculo...</div>
+                </div>
+              </details>
+              <details class="app-card">
+                <summary class="app-card-summary">
+                  <div class="app-card-head">
+                    <div class="title">2. Checagem de Consistência</div>
+                    <div class="subtitle">Vetores LI ou LD</div>
+                  </div>
+                  <div class="app-card-badge">Importante</div>
+                </summary>
+                <div class="app-card-body">
+                  <p class="mb-2 text-muted small">O zero é o principal teste. Se Det = 0, vetores são coplanares.</p>
+                  <div id="app2_interpretation" class="interpretation pending small">Aguardando cálculo...</div>
+                </div>
+              </details>
+              <details class="app-card">
+                <summary class="app-card-summary">
+                  <div class="app-card-head">
+                    <div class="title">3. Volume de Paralelepípedo</div>
+                    <div class="subtitle">Geometria 3D</div>
+                  </div>
+                  <div class="app-card-badge">Volume</div>
+                </summary>
+                <div class="app-card-body">
+                  <p class="mb-2 text-muted small">Volume do sólido formado pelos vetores:</p>
+                  <div>Volume: <span id="app4_volume" class="interpretation pending small">Aguardando...</span></div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

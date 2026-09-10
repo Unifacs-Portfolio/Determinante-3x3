@@ -17,33 +17,31 @@
       <div class="col-lg-7">
         <div class="card shadow-sm h-100">
           <div class="card-header">
-            <h4 class="mb-0 text-center text-muted fw-bold">Calculadora de Determinante 3x3</h4>
+            <h4 id="mainTitle" class="mb-0 text-center text-muted fw-bold">Calculadora de Determinante</h4>
           </div>
           <div class="card-body">
+
+            <!-- Seletor de tamanho da matriz -->
+            <div class="d-flex justify-content-center mb-4">
+              <div class="btn-group" role="group" aria-label="Escolha do tamanho da matriz">
+                <input type="radio" class="btn-check" name="matrixSize" id="size2" value="2" autocomplete="off">
+                <label class="btn btn-outline-secondary size-btn" for="size2">Matriz 2x2</label>
+
+                <input type="radio" class="btn-check" name="matrixSize" id="size3" value="3" autocomplete="off" checked>
+                <label class="btn btn-outline-secondary size-btn" for="size3">Matriz 3x3</label>
+              </div>
+            </div>
+
             <div class="row gy-4">
               <div class="col-md-5 d-flex flex-column justify-content-between">
                 <div class="p-3 bg-white rounded border-0">
                   <div id="formArea" class="d-flex flex-column align-items-center mb-4">
-                    <div class="d-flex gap-2 mb-2">
-                      <input class="form-control matrix-input text-center" id="a00" placeholder="a₁₁">
-                      <input class="form-control matrix-input text-center" id="a01" placeholder="a₁₂">
-                      <input class="form-control matrix-input text-center" id="a02" placeholder="a₁₃">
-                    </div>
-                    <div class="d-flex gap-2 mb-2">
-                      <input class="form-control matrix-input text-center" id="a10" placeholder="a₂₁">
-                      <input class="form-control matrix-input text-center" id="a11" placeholder="a₂₂">
-                      <input class="form-control matrix-input text-center" id="a12" placeholder="a₂₃">
-                    </div>
-                    <div class="d-flex gap-2 mb-2">
-                      <input class="form-control matrix-input text-center" id="a20" placeholder="a₃₁">
-                      <input class="form-control matrix-input text-center" id="a21" placeholder="a₃₂">
-                      <input class=" form-control matrix-input text-center" id="a22" placeholder="a₃₃">
-                    </div>
-                    <div id="validationMsg" class="mt-2"></div>
+                    <!-- Inputs da matriz são gerados dinamicamente pelo script.js -->
                   </div>
+                  <div id="validationMsg" class="mt-2"></div>
                   <div class="d-grid gap-2">
                     <button id="calcBtn" class="btn btn-primary shadow-sm">CALCULAR</button>
-                    <button id="resetBtn" class="btn btn-outline-secondary shadow-sm" style="font-size: 0.9rem; font-weight: bold; width: 100px; margin-left: 71px;">RESETAR</button> 
+                    <button id="resetBtn" class="btn btn-outline-secondary shadow-sm" style="font-size: 0.9rem; font-weight: bold; width: 100px; margin-left: 71px;">RESETAR</button>
                   </div>
                   <div class="mt-4 text-center">
                     <div id="result" class="fs-4 text-dark">Resultado: <span class="fw-bold">—</span></div>
@@ -55,7 +53,7 @@
               </div>
               <div class="col-md-7 border-start-md col-separator">
                 <div class="h-100 d-flex flex-column justify-content-center">
-                  <h6 class="text-center text-muted mb-4 small uppercase fw-bold">Regra de Sarrus</h6>
+                  <h6 id="methodTitle" class="text-center text-muted mb-4 small uppercase fw-bold">Regra de Sarrus</h6>
                   <div id="sarrusWrapper" class="sarrus-wrap">
                     <div id="sarrusArea" class="sarrus-grid"></div>
                     <svg id="arrowsSvg" class="position-absolute"></svg>
@@ -91,7 +89,7 @@
                 <summary class="app-card-summary">
                   <div class="app-card-head">
                     <div class="title">1. Solução Única em Sistemas</div>
-                    <div class="subtitle">Sistemas lineares 3x3</div>
+                    <div class="subtitle">Sistemas lineares</div>
                   </div>
                   <div class="app-card-badge">Teste</div>
                 </summary>
@@ -109,21 +107,21 @@
                   <div class="app-card-badge">Importante</div>
                 </summary>
                 <div class="app-card-body">
-                  <p class="mb-2 text-muted small">O zero é o principal teste. Se Det = 0, vetores são coplanares.</p>
+                  <p class="mb-2 text-muted small">O zero é o principal teste. Se Det = 0, os vetores são dependentes (coplanares/colineares).</p>
                   <div id="app2_interpretation" class="interpretation pending small">Aguardando cálculo...</div>
                 </div>
               </details>
               <details class="app-card">
                 <summary class="app-card-summary">
                   <div class="app-card-head">
-                    <div class="title">3. Volume de Paralelepípedo</div>
-                    <div class="subtitle">Geometria 3D</div>
+                    <div class="title" id="app3_title">3. Volume de Paralelepípedo</div>
+                    <div class="subtitle" id="app3_subtitle">Geometria 3D</div>
                   </div>
-                  <div class="app-card-badge">Volume</div>
+                  <div class="app-card-badge">Medida</div>
                 </summary>
                 <div class="app-card-body">
-                  <p class="mb-2 text-muted small">Volume do sólido formado pelos vetores:</p>
-                  <div>Volume: <span id="app4_volume" class="interpretation pending small">Aguardando...</span></div>
+                  <p class="mb-2 text-muted small" id="app3_desc">Volume do sólido formado pelos vetores:</p>
+                  <div><span id="app4_label">Volume:</span> <span id="app4_volume" class="interpretation pending small">Aguardando...</span></div>
                 </div>
               </details>
             </div>

@@ -1,6 +1,53 @@
 // --- VARIAVEIS GLOBAIS ---
 const formatar = n => (Number.isInteger(n) ? String(n) : Number(n).toFixed(2).replace(/\.?0+$/, '')) // Formatar número
 const pausarPorMs = (ms) => new Promise(resolve => setTimeout(resolve, ms)) // Dormir um pouco
+const subscritos = ['₁', '₂', '₃'] // Usados nos placeholders dos inputs (a₁₁, a₁₂, ...)
+
+let currentSize = 3 // Tamanho atual da matriz: 2 ou 3
+
+// --- CONSTRUÇÃO DINÂMICA DO FORMULÁRIO ---
+function construirFormulario(size) {
+    const formArea = document.getElementById('formArea')
+    formArea.innerHTML = ''
+    for (let i = 0; i < size; i++) {
+        const row = document.createElement('div')
+        row.className = 'd-flex gap-2 mb-2'
+        for (let j = 0; j < size; j++) {
+            const input = document.createElement('input')
+            input.className = 'form-control matrix-input text-center'
+            input.id = `a${i}${j}`
+            input.placeholder = `a${subscritos[i]}${subscritos[j]}`
+            row.appendChild(input)
+        }
+        formArea.appendChild(row)
+    }
+    anexarEventoEnter()
+}
+
+function anexarEventoEnter() {
+    document.querySelectorAll('.matrix-input').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('calcBtn').click()
+            }
+        })
+    })
+}
+
+// --- ATUALIZAÇÃO DE TEXTOS CONFORME O TAMANHO ---
+function atualizarTextosPorTamanho(size) {
+    document.getElementById('mainTitle').textContent = `Calculadora de Determinante ${size}x${size}`
+    document.getElementById('methodTitle').textContent = size === 3 ? 'Regra de Sarrus' : 'Método da Diagonal'
+}
+
+function resetarInterface() {
+    document.getElementById('stepsContainer').style.display = 'none'
+    document.getElementById('applications-panel').style.display = 'none'
+    document.getElementById('result').innerHTML = 'Resultado: <span class="fw-bold">—</span>'
+    document.getElementById('validationMsg').innerHTML = ''
+    document.getElementById('calculo-detalhado').innerHTML = ''
+    limparEfeitos()
+}
 
 // --- FUNÇÕES DE AJUSTE DE NÚMEROS E LEITURA ---
 function ajustarNumero(numero) {
@@ -22,11 +69,12 @@ function ajustarNumero(numero) {
     return numero
 }
 
-function lerMatriz() {
-    const matriz = [[], [], []]
+function lerMatriz(size) {
+    const matriz = []
     const errors = []
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < size; i++) {
+        matriz[i] = []
+        for (let j = 0; j < size; j++) {
             const element = document.getElementById(`a${i}${j}`)
             try {
                 matriz[i][j] = ajustarNumero(element.value)
@@ -41,8 +89,8 @@ function lerMatriz() {
     return { matriz, errors }
 }
 
-// --- CÁLCULOS (clara) ---
-function calcularDeterminante(matriz) {
+// --- CÁLCULOS ---
+function calcularDeterminante3a3(matriz) {
     // Diagonais principais
     const produtoDiagonalPrincipal1 = matriz[0][0] * matriz[1][1] * matriz[2][2]
     const produtoDiagonalPrincipal2 = matriz[0][1] * matriz[1][2] * matriz[2][0]
@@ -59,10 +107,18 @@ function calcularDeterminante(matriz) {
     return { produtoDiagonalPrincipal1, produtoDiagonalPrincipal2, produtoDiagonalPrincipal3, somaProdutosDiagonaisPrincipais, produtoDiagonalSecundaria1, produtoDiagonalSecundaria2, produtoDiagonalSecundaria3, somaProdutosDiagonaisSecundarias, determinante }
 }
 
+function calcularDeterminante2a2(matriz) {
+    const DiagonalPrincipal = matriz[0][0] * matriz[1][1]
+    const DiagonalSecundaria = matriz[0][1] * matriz[1][0]
+    const determinante = DiagonalPrincipal - DiagonalSecundaria
+    return { DiagonalPrincipal, DiagonalSecundaria, determinante }
+}
+
 // --- VISUALIZAÇÃO E COORDENADAS ---
-function renderizarGradeSarrus(matriz) {
+function renderizarGradeSarrus3x3(matriz) {
     const area = document.getElementById('sarrusArea')
     area.innerHTML = ''
+    area.style.gridTemplateColumns = 'repeat(5, 65px)'
     // Matriz expandida 3x5
     const matrizExpandida = [
         [matriz[0][0], matriz[0][1], matriz[0][2], matriz[0][0], matriz[0][1]],
@@ -79,11 +135,27 @@ function renderizarGradeSarrus(matriz) {
             area.appendChild(div)
         }
     }
-    // Chama ajuste imediatamente após renderizar
     setTimeout(ajustarTamanhoSVG, 50)
 }
 
-// Calcula coordenadas relativas ao Wrapper 
+function renderizarGrade2x2(matriz) {
+    const area = document.getElementById('sarrusArea')
+    area.innerHTML = ''
+    area.style.gridTemplateColumns = 'repeat(2, 65px)'
+
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
+            const div = document.createElement('div')
+            div.className = 'cell'
+            div.id = `cell-${i}-${j}`
+            div.textContent = formatar(matriz[i][j])
+            area.appendChild(div)
+        }
+    }
+    setTimeout(ajustarTamanhoSVG, 50)
+}
+
+// Calcula coordenadas relativas ao Wrapper
 function getCoords(r, c) {
     const elementoCelula = document.getElementById(`cell-${r}-${c}`)
     const wrapper = document.getElementById('sarrusWrapper')
@@ -96,12 +168,9 @@ function getCoords(r, c) {
     const wrapperRect = wrapper.getBoundingClientRect()
     const cellRect = elementoCelula.getBoundingClientRect()
 
-    const xOffset = 0
-    const yOffset = 0
-
     return {
-        x: (cellRect.left + cellRect.width / 2) - wrapperRect.left + xOffset,
-        y: (cellRect.top + cellRect.height / 2) - wrapperRect.top + yOffset
+        x: (cellRect.left + cellRect.width / 2) - wrapperRect.left,
+        y: (cellRect.top + cellRect.height / 2) - wrapperRect.top
     }
 }
 
@@ -112,15 +181,12 @@ function ajustarTamanhoSVG() {
     if (!svg || !wrapper) return
 
     const wrapperRect = wrapper.getBoundingClientRect()
-    const width = wrapperRect.width
-    const height = wrapperRect.height
-
-    svg.setAttribute('width', width)
-    svg.setAttribute('height', height)
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+    svg.setAttribute('width', wrapperRect.width)
+    svg.setAttribute('height', wrapperRect.height)
+    svg.setAttribute('viewBox', `0 0 ${wrapperRect.width} ${wrapperRect.height}`)
 }
 
-// Desenha seta SVG 
+// Desenha seta SVG
 function desenharSeta(svg, x1, y1, x2, y2, color) {
     const ns = 'http://www.w3.org/2000/svg'
     let defs = svg.querySelector('defs')
@@ -129,7 +195,6 @@ function desenharSeta(svg, x1, y1, x2, y2, color) {
         svg.prepend(defs)
     }
 
-    // Cria ID único para o marcador baseado na cor
     const idMarker = 'arrowhead-' + color.replace('#', '')
 
     if (!document.getElementById(idMarker)) {
@@ -166,36 +231,31 @@ function limparEfeitos() {
     }
 }
 
-// --- ANIMAÇÃO PRINCIPAL ---
-async function animarSarrus(matriz, calc) {
+// --- ANIMAÇÃO 3x3 (Regra de Sarrus) ---
+async function animarSarrus3x3(matriz, calc) {
     const svg = document.getElementById('arrowsSvg')
     const txtArea = document.getElementById('calculo-detalhado')
     const posColor = '#6366f1'
     const negColor = '#f97316'
 
-    // Garante alinhamento antes de começar
     ajustarTamanhoSVG()
     limparEfeitos()
     txtArea.innerHTML = ''
 
-    // Definição das diagonais (Linha, Coluna)
     const posSets = [[[0, 0], [1, 1], [2, 2]], [[0, 1], [1, 2], [2, 3]], [[0, 2], [1, 3], [2, 4]]]
     const negSets = [[[0, 2], [1, 1], [2, 0]], [[0, 3], [1, 2], [2, 1]], [[0, 4], [1, 3], [2, 2]]]
     const valoresPos = [calc.produtoDiagonalPrincipal1, calc.produtoDiagonalPrincipal2, calc.produtoDiagonalPrincipal3]
     const valoresNeg = [calc.produtoDiagonalSecundaria1, calc.produtoDiagonalSecundaria2, calc.produtoDiagonalSecundaria3]
 
-    // Diagonais principais
     txtArea.innerHTML += `<p class="text-primary mb-1"><strong>Diagonais Principais:</strong></p>`
     const resultadosDiagonaisPrincipais = []
     for (let i = 0; i < 3; i++) {
         const [c1, c2, c3] = posSets[i]
 
-        // Efeito Visual
         document.getElementById(`cell-${c1[0]}-${c1[1]}`).classList.add('highlight-diag-pos')
         document.getElementById(`cell-${c2[0]}-${c2[1]}`).classList.add('highlight-diag-pos')
         document.getElementById(`cell-${c3[0]}-${c3[1]}`).classList.add('highlight-diag-pos')
 
-        // Setas
         const p1 = getCoords(c1[0], c1[1])
         const p2 = getCoords(c2[0], c2[1])
         const p3 = getCoords(c3[0], c3[1])
@@ -203,7 +263,6 @@ async function animarSarrus(matriz, calc) {
         desenharSeta(svg, p1.x + 10, p1.y + 10, p2.x - 10, p2.y - 10, posColor)
         desenharSeta(svg, p2.x + 10, p2.y + 10, p3.x - 10, p3.y - 10, posColor)
 
-        // Texto
         const v1 = formatar(matriz[c1[0]][c1[1] % 3])
         const v2 = formatar(matriz[c2[0]][c2[1] % 3])
         const v3 = formatar(matriz[c3[0]][c3[1] % 3])
@@ -217,7 +276,6 @@ async function animarSarrus(matriz, calc) {
     txtArea.innerHTML += `<div class="mb-3 border-top">Soma das diagonais principais:<br>${somaDasDiagonaisPrincipais} = <strong>${formatar(calc.somaProdutosDiagonaisPrincipais)}</strong></div>`
     await pausarPorMs(500)
 
-    //  Diagonais secundárias
     txtArea.innerHTML += `<p class="text-warning mb-1"><strong>Diagonais Secundárias:</strong></p>`
     const resultadosDiagonaisSecundarias = []
     for (let i = 0; i < 3; i++) {
@@ -247,11 +305,49 @@ async function animarSarrus(matriz, calc) {
     txtArea.innerHTML += `<div class="mb-3 border-top">Soma das diagonais secundárias:<br>${somaDasDiagonaisSecundarias} = <strong>${formatar(calc.somaProdutosDiagonaisSecundarias)}</strong></div>`
     await pausarPorMs(500)
 
-    // 3. Final
     txtArea.innerHTML += `<p class="mt-2 p-2 bg-light border rounded text-center"><strong>Total:</strong> ${formatar(calc.somaProdutosDiagonaisPrincipais)} - ${formatar(calc.somaProdutosDiagonaisSecundarias)} = <span class="text-success fs-5"><strong>${formatar(calc.determinante)}</strong></span></p>`
 }
 
-function atualizarApps(matriz, calc) {
+// --- ANIMAÇÃO 2x2 (Método da diagonal simples) ---
+async function animarDiagonal2x2(matriz, calc) {
+    const svg = document.getElementById('arrowsSvg')
+    const txtArea = document.getElementById('calculo-detalhado')
+    const posColor = '#6366f1'
+    const negColor = '#f97316'
+
+    ajustarTamanhoSVG()
+    limparEfeitos()
+    txtArea.innerHTML = ''
+
+    // Diagonal principal: a00 -> a11
+    document.getElementById('cell-0-0').classList.add('highlight-diag-pos')
+    document.getElementById('cell-1-1').classList.add('highlight-diag-pos')
+    let p1 = getCoords(0, 0)
+    let p2 = getCoords(1, 1)
+    desenharSeta(svg, p1.x + 10, p1.y + 10, p2.x - 10, p2.y - 10, posColor)
+
+    txtArea.innerHTML += `<p class="text-primary mb-1"><strong>Diagonal Principal:</strong></p>`
+    txtArea.innerHTML += `<div class="mb-3 border-top">(${formatar(matriz[0][0])} × ${formatar(matriz[1][1])}) = <strong>${formatar(calc.DiagonalPrincipal)}</strong></div>`
+    await pausarPorMs(1200)
+    limparEfeitos()
+
+    // Diagonal secundária: a01 -> a10
+    document.getElementById('cell-0-1').classList.add('highlight-diag-neg')
+    document.getElementById('cell-1-0').classList.add('highlight-diag-neg')
+    p1 = getCoords(0, 1)
+    p2 = getCoords(1, 0)
+    desenharSeta(svg, p1.x - 10, p1.y + 10, p2.x + 10, p2.y - 10, negColor)
+
+    txtArea.innerHTML += `<p class="text-warning mb-1"><strong>Diagonal Secundária:</strong></p>`
+    txtArea.innerHTML += `<div class="mb-3 border-top">(${formatar(matriz[0][1])} × ${formatar(matriz[1][0])}) = <strong>${formatar(calc.DiagonalSecundaria)}</strong></div>`
+    await pausarPorMs(1200)
+    limparEfeitos()
+
+    txtArea.innerHTML += `<p class="mt-2 p-2 bg-light border rounded text-center"><strong>Total:</strong> ${formatar(calc.DiagonalPrincipal)} - ${formatar(calc.DiagonalSecundaria)} = <span class="text-success fs-5"><strong>${formatar(calc.determinante)}</strong></span></p>`
+}
+
+// --- APLICAÇÕES PRÁTICAS ---
+function atualizarApps(matriz, calc, size) {
     const det = calc.determinante
     document.getElementById('current_det_value').textContent = formatar(det)
 
@@ -265,60 +361,70 @@ function atualizarApps(matriz, calc) {
         `<span class="text-success">LI (Linearmente Independentes).</span>` :
         `<span class="text-danger">LD (Linearmente Dependentes).</span>`
 
-    document.getElementById('app4_volume').textContent = `${formatar(Math.abs(det))} u.v.`
+    const app3Title = document.getElementById('app3_title')
+    const app3Subtitle = document.getElementById('app3_subtitle')
+    const app3Desc = document.getElementById('app3_desc')
+    const app4Label = document.getElementById('app4_label')
+    const volumeSpan = document.getElementById('app4_volume')
+
+    if (size === 3) {
+        app3Title.textContent = '3. Volume de Paralelepípedo'
+        app3Subtitle.textContent = 'Geometria 3D'
+        app3Desc.textContent = 'Volume do sólido formado pelos vetores:'
+        app4Label.textContent = 'Volume:'
+        volumeSpan.textContent = `${formatar(Math.abs(det))} u.v.`
+    } else {
+        app3Title.textContent = '3. Área do Paralelogramo'
+        app3Subtitle.textContent = 'Geometria 2D'
+        app3Desc.textContent = 'Área da figura formada pelos vetores:'
+        app4Label.textContent = 'Área:'
+        volumeSpan.textContent = `${formatar(Math.abs(det))} u.a.`
+    }
 }
 
-// --- EVENTO PRINCIPAL ---
+// --- EVENTO PRINCIPAL: CALCULAR ---
 document.getElementById('calcBtn').addEventListener('click', async () => {
     const botaoCalcular = document.getElementById('calcBtn')
     const msgValidacao = document.getElementById('validationMsg')
     msgValidacao.innerHTML = ''
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-        window.location.reload()
-    })
-
-    // Limpa interface
     document.getElementById('stepsContainer').style.display = 'none'
     document.getElementById('applications-panel').style.display = 'none'
     document.getElementById('result').innerHTML = 'Resultado: <span class="fw-bold">—</span>'
 
+    let calc
     try {
-        // Lê dados
-        const { matriz, errors } = lerMatriz()
+        const { matriz, errors } = lerMatriz(currentSize)
         if (errors.length) {
             msgValidacao.innerHTML = errors.map(e => `<div class="text-error">${e}</div>`).join('')
             return
         }
 
-        //  Bloqueia botão
         botaoCalcular.disabled = true
         botaoCalcular.textContent = "Calculando..."
-
-        // Prepara Visualização
-        renderizarGradeSarrus(matriz)
-        const calc = calcularDeterminante(matriz)
-        ajustarTamanhoSVG()
-
 
         document.getElementById('stepsContainer').style.display = 'block'
 
-        botaoCalcular.disabled = true
-        botaoCalcular.textContent = "Calculando..."
+        if (currentSize === 3) {
+            renderizarGradeSarrus3x3(matriz)
+            calc = calcularDeterminante3a3(matriz)
+            ajustarTamanhoSVG()
+            await animarSarrus3x3(matriz, calc)
+        } else {
+            renderizarGrade2x2(matriz)
+            calc = calcularDeterminante2a2(matriz)
+            ajustarTamanhoSVG()
+            await animarDiagonal2x2(matriz, calc)
+        }
 
-        // Executa Animação 
-        await animarSarrus(matriz, calc)
-
-        //Sucesso - Mostra resultados finais
         document.getElementById('result').innerHTML = `Resultado: <span class="fw-bold text-dark">${formatar(calc.determinante)}</span>`
-        atualizarApps(matriz, calc)
+        atualizarApps(matriz, calc, currentSize)
         document.getElementById('applications-panel').style.display = 'block'
-
 
     } catch (err) {
         console.error("Erro na animação:", err)
         msgValidacao.innerHTML = `<div class="text-error">Ocorreu um erro na animação. Verifique o console.</div>`
-        if (typeof calc !== 'undefined') {
+        if (calc) {
             document.getElementById('result').innerHTML = `Resultado: <span class="fw-bold">${formatar(calc.determinante)}</span>`
         }
     } finally {
@@ -327,14 +433,24 @@ document.getElementById('calcBtn').addEventListener('click', async () => {
     }
 })
 
+// --- EVENTO: RESETAR ---
+document.getElementById('resetBtn').addEventListener('click', () => {
+    window.location.reload()
+})
+
+// --- EVENTO: TROCA DE TAMANHO DE MATRIZ ---
+document.querySelectorAll('input[name="matrixSize"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        currentSize = Number(e.target.value)
+        resetarInterface()
+        construirFormulario(currentSize)
+        atualizarTextosPorTamanho(currentSize)
+    })
+})
+
 // Redimensionamento
 window.addEventListener('resize', () => setTimeout(ajustarTamanhoSVG, 150))
 
-// Enter key
-document.querySelectorAll('.matrix-input').forEach(input => {
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            document.getElementById('calcBtn').click()
-        }
-    })
-})
+// --- INICIALIZAÇÃO ---
+construirFormulario(currentSize)
+atualizarTextosPorTamanho(currentSize)

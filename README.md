@@ -39,11 +39,14 @@ Este projeto é uma aplicação web interativa desenvolvida para calcular determ
 
 ## 📂 Estrutura do Projeto
 
-```markdown
 📁 projeto-sarrus
 
 │
+
 ├── 📄 index.html      # Estrutura da página
+
 ├── 📄 styles.css      # Estilos visuais adicionais
+
 ├── 📄 script.js       # Lógica, cálculos e animações
+
 └── 📄 favicon.png     # Ícone da página
